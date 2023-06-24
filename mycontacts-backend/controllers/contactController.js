@@ -5,13 +5,13 @@ const Contact = require('../models/contactModel');
 //@route GET /api/contacts
 //@access Public
 const getContacts = asyncHandler(async(req, res) => {
-    const contacts = await Contact.find();
+    const contacts = await Contact.find({ user: req.user._id});
     res.status(200).json(contacts);
 });
 
 //@desc Create New contact
 //@route POST /api/contact/
-//@access Public
+//@access private
 const createContacts = asyncHandler(async(req, res) => {
     const {name, email, phone} = req.body;
     if(!name || !email || !phone){
@@ -21,14 +21,15 @@ const createContacts = asyncHandler(async(req, res) => {
     const contact = await Contact.create({
         name,
         email,
-        phone
+        phone,
+        user: req.user._id
     })
     res.status(201).json(contact);
 });
 
 //@desc GET New contact
 //@route GET /api/contacts/:id
-//@access Public
+//@access private
 const getContact = asyncHandler(async(req, res) => {
     try {
         const contact = await Contact.findById(req.params.id);
@@ -41,7 +42,7 @@ const getContact = asyncHandler(async(req, res) => {
 
 //@desc Update contact
 //@route PUT /api/contacts/:id
-//@access Public
+//@access private
 const updateContact = asyncHandler(async(req, res) => {
     try{
         const updatedContact = await Contact.findByIdAndUpdate(
